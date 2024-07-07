@@ -63,3 +63,18 @@ export async function getLoggedInUser() {
         return null;
     }
 }
+
+export const logOutAccount = async () => {
+    console.log('user about to be logged out ⛽' )
+    try {
+        const { account } = await createSessionClient();
+
+        cookies().delete('appwrite-session')
+
+        await account.deleteSession('current')
+
+        console.log('log out successfull 🔏')
+    } catch (error) {
+
+    }
+}
