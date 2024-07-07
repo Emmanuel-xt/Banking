@@ -20,11 +20,14 @@ import { Input } from "@/components/ui/input";
 import CustomInput from "./CustomInput";
 import { authFormSchema } from "@/lib/utils";
 import { Loader, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { getLoggedInUser, signIn, signUp } from "@/lib/actions/user.actions";
 
 const AuthForm = ({ type }: { type: string }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const formSchema = authFormSchema("sign-up");
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -34,12 +37,34 @@ const AuthForm = ({ type }: { type: string }) => {
     },
   });
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-  }
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
+
+    try {
+      console.log(values);
+
+      if (type === "sign-up") {
+        const newUser = await signUp(values);
+        setUser(newUser)
+      }
+
+      if (type === "sign-in") {
+        console.log('want to sign in')
+        const response = await signIn({
+          email: values.email,
+          password: values.password,
+        });
+        if (response) {
+          router.push("/");
+        }
+      }
+      
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <section className="auth-form">
       <header className="flex flex-col gap-5 md:gap-8">
@@ -89,9 +114,15 @@ const AuthForm = ({ type }: { type: string }) => {
                   </div>
                   <CustomInput
                     control={form.control}
-                    name="address"
+                    name="address1"
                     label="Address"
                     placeholder="Enter your specific address"
+                  />
+                  <CustomInput
+                    control={form.control}
+                    name="city"
+                    label="City"
+                    placeholder="Enter your City"
                   />
                   <div className="flex gap-4">
                     <CustomInput
