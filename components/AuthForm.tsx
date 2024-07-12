@@ -22,6 +22,7 @@ import { authFormSchema } from "@/lib/utils";
 import { Loader, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { getLoggedInUser, signIn, signUp } from "@/lib/actions/user.actions";
+import PlaidLink from "./PlaidLink";
 
 const AuthForm = ({ type }: { type: string }) => {
   const [user, setUser] = useState(null);
@@ -43,22 +44,36 @@ const AuthForm = ({ type }: { type: string }) => {
     try {
       console.log(values);
 
+      const userData = {
+        firstName: values.firstName!,
+        lastName: values.lastName!,
+        address1: values.address1!,
+        city: values.city!,
+        state: values.state!,
+        postalCode: values.postalCode!,
+        dateOfBirth: values.dateOfBirth!,
+        ssn: values.ssn!,
+        email: values.email!,
+        password: values.password!,
+      };
+
       if (type === "sign-up") {
-        const newUser = await signUp(values);
-        setUser(newUser)
+        const newUser = await signUp(userData);
+        setUser(newUser);
       }
 
       if (type === "sign-in") {
-        console.log('want to sign in')
+        console.log("want to sign in");
         const response = await signIn({
           email: values.email,
           password: values.password,
         });
+        console.log('Sign in succefull');
+        
         if (response) {
           router.push("/");
         }
       }
-      
     } catch (error) {
       console.log(error);
     } finally {
@@ -91,7 +106,9 @@ const AuthForm = ({ type }: { type: string }) => {
         </div>
       </header>
       {user ? (
-        <div className="flex flex-col gap-4">{/* Played link */}</div>
+        <div className="flex flex-col gap-4">
+          <PlaidLink user={user} variant={"primary"} />
+        </div>
       ) : (
         <>
           <Form {...form}>
