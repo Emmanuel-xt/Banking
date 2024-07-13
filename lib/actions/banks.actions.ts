@@ -12,7 +12,7 @@ import {
 // import { plaidClient } from "../plaid.config";
 import { parseStringify } from "../utils";
 
-import { getTransactionsByBankId } from "./transaction.actions";
+// import { getTransactionsByBankId } from "./transaction.actions";
 import { getBanks, getBank } from "./user.actions";
 import { plaidClient } from "../plaid";
 
