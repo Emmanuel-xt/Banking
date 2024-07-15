@@ -7,7 +7,7 @@ import { ID, Query } from "node-appwrite"
 import { CountryCode, ProcessorTokenCreateRequest, ProcessorTokenCreateRequestProcessorEnum, Products } from "plaid"
 import { plaidClient } from "../plaid"
 import { revalidatePath } from "next/cache"
-import { createDwollaCustomer } from "./dwolla.action"
+import { addFundingSource, createDwollaCustomer } from "./dwolla.action"
 const {
     APPWRITE_DATABASE_ID: DATABASE_ID,
     APPWRITE_USER_COLLECTION_ID: USER_COLLECTION_ID,
@@ -39,14 +39,16 @@ export const signIn = async ({ email, password }: signInProps) => {
         const { account } = await createAdminClient();
 
         const session = await account.createEmailPasswordSession(email, password)
-        cookies().set("appwrite-session", response.secret, {
+        cookies().set("appwrite-session", session.secret, {
             path: "/",
             httpOnly: true,
             sameSite: "strict",
             secure: true,
         });
 
-        const user = await getUserInfo({ userId: session })
+        const response = await getUserInfo({ userId: session.userId })
+
+        const user = await getUserInfo({ userId: response.$id })
 
 
         console.log('Sign in successfull 😁', response)
@@ -119,7 +121,14 @@ export async function getLoggedInUser() {
     try {
         const { account } = await createSessionClient();
 
-        const user = await account.get();
+        const result = await account.get();
+        console.log('result from getLogged in user function -->', result)
+
+        const user = await getUserInfo({ userId: result.$id });
+
+        console.log('user from getLogged in user function -->', user)
+
+
 
         return parseStringify(user);
     } catch (error) {
@@ -139,7 +148,7 @@ export const logOutAccount = async () => {
 
         console.log('log out successfull 🔏')
     } catch (error) {
-
+        console.log('error logging out 🧐', error)
     }
 }
 
@@ -190,11 +199,12 @@ export const createBankAccount = async ({
             }
         )
 
-        console.log('Bank Account from create Bank account function -->', bankAccount)
+        console.log('Bank created 💰💰💰 ->', bankAccount)
 
         return parseStringify(bankAccount)
 
     } catch (error) {
+        console.log('Error creating bank account -->', error)
 
     }
 
@@ -243,7 +253,7 @@ export const exchangePublicToken = async ({
         if (!fundingSourceUrl) throw Error;
 
         // Create a bank account using the user ID, item ID, account ID, access token, funding source URL, and sharable ID
-        await createBankAccount({
+        const bankCreated = await createBankAccount({
             userId: user.$id,
             bankId: itemId,
             accountId: accountData.account_id,
@@ -251,6 +261,9 @@ export const exchangePublicToken = async ({
             fundingSourceUrl,
             sharableId: encryptId(accountData.account_id),
         });
+
+
+
 
         // Revalidate the path to reflect the changes
         revalidatePath("/");

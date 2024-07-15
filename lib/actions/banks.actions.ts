@@ -19,9 +19,11 @@ import { plaidClient } from "../plaid";
 // Get multiple bank accounts
 export const getAccounts = async ({ userId }: getAccountsProps) => {
   try {
+    console.log('getAccounts user id gotten ==' , userId)
     // get banks from db
     const banks = await getBanks({ userId });
-
+    console.log('banks gotten ==' , banks)
+    
     const accounts = await Promise.all(
       banks?.map(async (bank: Bank) => {
         // get each account info from plaid
@@ -67,8 +69,10 @@ export const getAccounts = async ({ userId }: getAccountsProps) => {
 // Get one bank account
 export const getAccount = async ({ appwriteItemId }: getAccountProps) => {
   try {
+    console.log('appwriteItemId -> ' ,appwriteItemId)
     // get bank from db
     const bank = await getBank({ documentId: appwriteItemId });
+    console.log('Bank -> ' ,bank)
 
     // get account info from plaid
     const accountsResponse = await plaidClient.accountsGet({
