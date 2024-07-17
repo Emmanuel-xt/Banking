@@ -8,17 +8,22 @@ import React from "react";
 
 const Home = async ({ searchParams: { id, page } }: SearchParamProps) => {
   const loggedIn = await getLoggedInUser();
+  
+  console.log('logged in at home -->' , loggedIn)
   const accounts = await getAccounts({
     userId: loggedIn?.$id,
   });
   if (!accounts) return;
 
   const accountData = accounts?.data;
-
+  console.log('account in at home -->' , accounts)
+  console.log('accountData in at home -->' , accountData)
+  
   console.log('accounts =>' , accounts , 'account data =>' , accountData)
-
+  
   const appwriteItemId = (id as string) || accounts?.data[0]?.appwriteItemId;
-
+  console.log('appwriteId in at home -->' , appwriteItemId)
+  
   const account = await getAccount({ appwriteItemId });
  
   if(!loggedIn) redirect('/sign-in')
@@ -28,7 +33,7 @@ const Home = async ({ searchParams: { id, page } }: SearchParamProps) => {
         <Header
           type="greeting"
           title="Welcome"
-          user={loggedIn?.name || "Guest"}
+          user={loggedIn?.firstName || "Guest"}
           subtext="Access and manage your accounts seamlessly"
         />
         <TotalBalanceBox
