@@ -72,7 +72,7 @@ export const getAccount = async ({ appwriteItemId }: getAccountProps) => {
     // console.log('appwriteItemId -> ' ,appwriteItemId)
     // get bank from db
     const bank = await getBank({ documentId: appwriteItemId });
-    console.log('Bank -> ' ,bank)
+    // console.log('Bank -> ' ,bank)
     
     // get account info from plaid
     const accountsResponse = await plaidClient.accountsGet({

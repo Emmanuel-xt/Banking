@@ -26,7 +26,7 @@ const Home = async ({ searchParams: { id, page } }: SearchParamProps) => {
   // console.log('appwriteId in at home -->' , appwriteItemId)
   
   const account = await getAccount({ appwriteItemId });
-  console.log('accountData in at home -->' , account)
+  // console.log('accountData in at home -->' , account)
 
   if (!loggedIn) redirect("/sign-in");
   return (
