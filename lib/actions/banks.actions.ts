@@ -12,17 +12,17 @@ import {
 // import { plaidClient } from "../plaid.config";
 import { parseStringify } from "../utils";
 
-// import { getTransactionsByBankId } from "./transaction.actions";
+import { getTransactionsByBankId } from "./transactions.actions";
 import { getBanks, getBank } from "./user.actions";
 import { plaidClient } from "../plaid";
 
 // Get multiple bank accounts
 export const getAccounts = async ({ userId }: getAccountsProps) => {
   try {
-    console.log('getAccounts user id gotten ==' , userId)
+    // console.log('getAccounts user id gotten ==' , userId)
     // get banks from db
     const banks = await getBanks({ userId });
-    console.log('banks gotten ==' , banks)
+    // console.log('banks gotten ==' , banks)
     
     const accounts = await Promise.all(
       banks?.map(async (bank: Bank) => {
@@ -69,17 +69,17 @@ export const getAccounts = async ({ userId }: getAccountsProps) => {
 // Get one bank account
 export const getAccount = async ({ appwriteItemId }: getAccountProps) => {
   try {
-    console.log('appwriteItemId -> ' ,appwriteItemId)
+    // console.log('appwriteItemId -> ' ,appwriteItemId)
     // get bank from db
     const bank = await getBank({ documentId: appwriteItemId });
-    console.log('Bank -> ' ,bank)
-
+    // console.log('Bank -> ' ,bank)
+    
     // get account info from plaid
     const accountsResponse = await plaidClient.accountsGet({
       access_token: bank.accessToken,
     });
     const accountData = accountsResponse.data.accounts[0];
-
+    console.log('accountsResponse -> ' ,accountData)
     // get transfer transactions from appwrite
     const transferTransactionsData = await getTransactionsByBankId({
       bankId: bank.$id,

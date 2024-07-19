@@ -122,11 +122,11 @@ export async function getLoggedInUser() {
         const { account } = await createSessionClient();
 
         const result = await account.get();
-        console.log('result from getLogged in user function -->', result)
+        console.log('result from getLogged in user function -->', result.name)
 
         const user = await getUserInfo({ userId: result.$id });
 
-        console.log('user from getLogged in user function -->', user)
+        console.log('user from getLogged in user function -->', user.email)
 
 
 
